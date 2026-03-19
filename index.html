@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TaskFlow — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-primary: #F5F0EB;
+  --bg-card: #FFFDF9;
+  --bg-sidebar: #1A1A2E;
+  --bg-sidebar-hover: #2A2A42;
+  --bg-sidebar-active: #33334D;
+  --text-primary: #2D2D3A;
+  --text-secondary: #6B6B7B;
+  --text-muted: #9B9BA8;
+  --text-sidebar: #B8B8CC;
+  --text-sidebar-active: #F5F0EB;
+  --accent-primary: #C75B39;
+  --accent-primary-light: #E8C4B8;
+  --accent-secondary: #6B8F71;
+  --accent-secondary-light: #D4E5D6;
+  --accent-warning: #D4943A;
+  --accent-warning-light: #F0DFC4;
+  --accent-critical: #B83A3A;
+  --accent-critical-light: #F0C4C4;
+  --accent-info: #3A7CB8;
+  --accent-info-light: #C4DAF0;
+  --border: #E5DDD5;
+  --shadow-sm: 0 1px 3px rgba(45, 45, 58, 0.06);
+  --shadow-md: 0 4px 12px rgba(45, 45, 58, 0.08);
+  --shadow-lg: 0 8px 30px rgba(45, 45, 58, 0.12);
+  --shadow-card-hover: 0 12px 40px rgba(45, 45, 58, 0.15);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --sidebar-width: 260px;
+  --header-height: 72px;
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body: 'DM Sans', -apple-system, sans-serif;
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html { font-size: 15px; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════ SIDEBAR ═══════════ */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--bg-sidebar);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: transform var(--transition);
+}
+
+.sidebar-brand {
+  padding: 28px 24px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.sidebar-brand h1 {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  color: var(--text-sidebar-active);
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-brand h1 .brand-mark {
+  width: 32px; height: 32px;
+  background: var(--accent-primary);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: white;
+  flex-shrink: 0;
+}
+
+.sidebar-brand .brand-sub {
+  font-family: var(--font-body);
+  font-size: 0.73rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 16px 12px;
+  overflow-y: auto;
+}
+
+.sidebar-nav .nav-section {
+  margin-bottom: 24px;
+}
+
+.sidebar-nav .nav-label {
+  font-size: 0.67rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  padding: 0 12px;
+  margin-bottom: 8px;
+}
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-sidebar);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 400;
+  transition: all var(--transition);
+  position: relative;
+}
+
+.sidebar-nav a:hover {
+  background: var(--bg-sidebar-hover);
+  color: var(--text-sidebar-active);
+}
+
+.sidebar-nav a.active {
+  background: var(--bg-sidebar-active);
+  color: var(--text-sidebar-active);
+  font-weight: 500;
+}
+
+.sidebar-nav a.active::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 24px;
+  background: var(--accent-primary);
+  border-radius: 0 2px 2px 0;
+}
+
+.sidebar-nav a .nav-icon {
+  width: 20px; height: 20px;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.sidebar-nav a.active .nav-icon,
+.sidebar-nav a:hover .nav-icon {
+  opacity: 1;
+}
+
+.sidebar-nav a .nav-badge {
+  margin-left: auto;
+  background: var(--accent-primary);
+  color: white;
+  font-size: 0.67rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.sidebar-footer {
+  padding: 16px 12px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.sidebar-footer .workspace-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.sidebar-footer .workspace-info:hover {
+  background: var(--bg-sidebar-hover);
+}
+
+.sidebar-footer .workspace-dot {
+  width: 8px; height: 8px;
+  background: var(--accent-secondary);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sidebar-footer .workspace-name {
+  font-size: 0.8rem;
+  color: var(--text-sidebar-active);
+  font-weight: 500;
+}
+
+.sidebar-footer .workspace-plan {
+  font-size: 0.67rem;
+  color: var(--text-muted);
+}
+
+/* ═══════════ MAIN LAYOUT ═══════════ */
+.main {
+  margin-left: var(--sidebar-width);
+  min-height: 100vh;
+}
+
+/* ═══════════ HEADER ═══════════ */
+.header {
+  height: var(--header-height);
+  background: rgba(245, 240, 235, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-search {
+  flex: 1;
+  max-width: 420px;
+  position: relative;
+}
+
+.header-search input {
+  width: 100%;
+  padding: 10px 16px 10px 42px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 0.87rem;
+  color: var(--text-primary);
+  transition: all var(--transition);
+  outline: none;
+}
+
+.header-search input::placeholder {
+  color: var(--text-muted);
+}
+
+.header-search input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(199, 91, 57, 0.1);
+}
+
+.header-search .search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+.header-search .search-shortcut {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  background: var(--bg-primary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.header-btn {
+  width: 40px; height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+}
+
+.header-btn:hover {
+  background: rgba(45, 45, 58, 0.06);
+  color: var(--text-primary);
+}
+
+.header-btn .notif-dot {
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 8px; height: 8px;
+  background: var(--accent-primary);
+  border-radius: 50%;
+  border: 2px solid var(--bg-primary);
+}
+
+.header-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px 6px 6px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition);
+  position: relative;
+}
+
+.header-user:hover { background: rgba(45, 45, 58, 0.06); }
+
+.header-user .avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-primary), #E8856B);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.header-user .user-info {
+  line-height: 1.2;
+}
+
+.header-user .user-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.header-user .user-role {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.header-user .chevron {
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+/* User dropdown */
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 200px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all var(--transition);
+  z-index: 200;
+}
+
+.user-dropdown.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.user-dropdown a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: background var(--transition);
+}
+
+.user-dropdown a:hover {
+  background: var(--bg-primary);
+}
+
+.user-dropdown .dropdown-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+.user-dropdown a.danger { color: var(--accent-critical); }
+
+/* ═══════════ MOBILE MENU TOGGLE ═══════════ */
+.mobile-toggle {
+  display: none;
+  width: 40px; height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.mobile-toggle:hover { background: rgba(45,45,58,0.06); }
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(26,26,46,0.4);
+  backdrop-filter: blur(4px);
+  z-index: 99;
+}
+
+/* ═══════════ CONTENT ═══════════ */
+.content {
+  padding: 28px 32px 48px;
+  max-width: 1280px;
+}
+
+/* Page heading */
+.page-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-heading h2 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.page-heading .greeting {
+  font-size: 0.87rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.page-heading .heading-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--accent-primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #B5502F;
+  box-shadow: 0 4px 14px rgba(199, 91, 57, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--text-muted);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ═══════════ STATS BAR ═══════════ */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px 22px;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 3px;
+}
+
+.stat-card:nth-child(1)::after { background: var(--accent-info); }
+.stat-card:nth-child(2)::after { background: var(--accent-secondary); }
+.stat-card:nth-child(3)::after { background: var(--accent-warning); }
+.stat-card:nth-child(4)::after { background: var(--accent-critical); }
+
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.stat-card .stat-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.stat-card .stat-value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stat-card .stat-change {
+  font-size: 0.75rem;
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+.stat-change.positive { color: var(--accent-secondary); }
+.stat-change.negative { color: var(--accent-critical); }
+
+/* ═══════════ SECTION CONTROLS ═══════════ */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.section-header h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 2px;
+  background: rgba(45,45,58,0.04);
+  padding: 3px;
+  border-radius: var(--radius-sm);
+}
+
+.filter-tab {
+  padding: 6px 14px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.filter-tab:hover { color: var(--text-primary); }
+
+.filter-tab.active {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ═══════════ TASK CARDS GRID ═══════════ */
+.tasks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.task-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 22px;
+  transition: all var(--transition);
+  cursor: pointer;
+  position: relative;
+  animation: cardIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+.task-card:nth-child(1)  { animation-delay: 0.04s; }
+.task-card:nth-child(2)  { animation-delay: 0.08s; }
+.task-card:nth-child(3)  { animation-delay: 0.12s; }
+.task-card:nth-child(4)  { animation-delay: 0.16s; }
+.task-card:nth-child(5)  { animation-delay: 0.20s; }
+.task-card:nth-child(6)  { animation-delay: 0.24s; }
+.task-card:nth-child(7)  { animation-delay: 0.28s; }
+.task-card:nth-child(8)  { animation-delay: 0.32s; }
+.task-card:nth-child(9)  { animation-delay: 0.36s; }
+
+.task-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-3px);
+  border-color: transparent;
+}
+
+.task-card .card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+
+/* Priority indicator */
+.priority-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.priority-dot.critical { background: var(--accent-critical); box-shadow: 0 0 0 3px var(--accent-critical-light); }
+.priority-dot.high     { background: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-primary-light); }
+.priority-dot.medium   { background: var(--accent-warning); box-shadow: 0 0 0 3px var(--accent-warning-light); }
+.priority-dot.low      { background: var(--accent-info); box-shadow: 0 0 0 3px var(--accent-info-light); }
+
+.task-id {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+.task-card h4 {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.task-card .task-desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Status badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.status-badge .status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+
+.status-badge.todo {
+  background: var(--accent-info-light);
+  color: var(--accent-info);
+}
+.status-badge.todo .status-dot { background: var(--accent-info); }
+
+.status-badge.in-progress {
+  background: var(--accent-warning-light);
+  color: #9B6A1F;
+}
+.status-badge.in-progress .status-dot { background: var(--accent-warning); }
+
+.status-badge.done {
+  background: var(--accent-secondary-light);
+  color: #4A6B4F;
+}
+.status-badge.done .status-dot { background: var(--accent-secondary); }
+
+/* Tags */
+.task-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+  margin-bottom: 16px;
+}
+
+.tag {
+  padding: 3px 9px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+/* Card footer */
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  gap: 8px;
+}
+
+.card-footer .assignee {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-footer .assignee-avatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: white;
+  flex-shrink: 0;
+}
+
+.card-footer .assignee-name {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.card-footer .due-date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.card-footer .due-date.overdue {
+  color: var(--accent-critical);
+  font-weight: 500;
+}
+
+.card-footer .due-date svg {
+  flex-shrink: 0;
+}
+
+/* ═══════════ ANIMATIONS ═══════════ */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.stats-bar   { animation: fadeSlideUp 0.4s ease backwards; animation-delay: 0.1s; }
+.section-header { animation: fadeSlideUp 0.4s ease backwards; animation-delay: 0.2s; }
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 1024px) {
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .content { padding: 24px; }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar-overlay.open {
+    display: block;
+  }
+
+  .main { margin-left: 0; }
+
+  .mobile-toggle { display: flex; }
+
+  .header { padding: 0 16px; }
+  .content { padding: 20px 16px 40px; }
+
+  .page-heading h2 { font-size: 1.6rem; }
+
+  .stats-bar { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+
+  .tasks-grid { grid-template-columns: 1fr; }
+
+  .header-user .user-info { display: none; }
+
+  .header-search .search-shortcut { display: none; }
+}
+
+@media (max-width: 480px) {
+  .stats-bar { grid-template-columns: 1fr; }
+  .stat-card { padding: 16px; }
+  .stat-card .stat-value { font-size: 1.6rem; }
+  .page-heading { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <h1>
+      <span class="brand-mark">T</span>
+      TaskFlow
+    </h1>
+    <div class="brand-sub">Project Management</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-label">Main</div>
+      <a href="#" class="active">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+        Dashboard
+      </a>
+      <a href="#">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg>
+        My Tasks
+        <span class="nav-badge">12</span>
+      </a>
+      <a href="#">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/></svg>
+        Projects
+      </a>
+      <a href="#">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/></svg>
+        Calendar
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Workspace</div>
+      <a href="#">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/></svg>
+        Team
+      </a>
+      <a href="#">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+        Settings
+      </a>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="workspace-info">
+      <span class="workspace-dot"></span>
+      <div>
+        <div class="workspace-name">Acme Corp</div>
+        <div class="workspace-plan">Pro Plan</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- HEADER -->
+  <header class="header">
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle sidebar">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+
+    <div class="header-search">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+      <input type="text" placeholder="Search tasks, projects, people...">
+      <span class="search-shortcut">/</span>
+    </div>
+
+    <div class="header-actions">
+      <button class="header-btn" aria-label="Notifications">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+      <button class="header-btn" aria-label="Help">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
+      </button>
+
+      <div class="header-divider"></div>
+
+      <div class="header-user" id="userMenu">
+        <div class="avatar">JD</div>
+        <div class="user-info">
+          <div class="user-name">Jane Doe</div>
+          <div class="user-role">Product Lead</div>
+        </div>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+
+        <div class="user-dropdown" id="userDropdown">
+          <a href="#">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+            Profile
+          </a>
+          <a href="#">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+            Settings
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="danger">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
+            Sign Out
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- Page Heading -->
+    <div class="page-heading">
+      <div>
+        <h2>Dashboard</h2>
+        <div class="greeting">Good morning, Jane. You have <strong>4 tasks</strong> due today.</div>
+      </div>
+      <div class="heading-actions">
+        <button class="btn btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/></svg>
+          Board View
+        </button>
+        <button class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+          New Task
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-label">Total Tasks</div>
+        <div class="stat-value">48</div>
+        <div class="stat-change positive">+6 this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Completed</div>
+        <div class="stat-value">21</div>
+        <div class="stat-change positive">+3 this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">In Progress</div>
+        <div class="stat-value">18</div>
+        <div class="stat-change positive">+2 this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Overdue</div>
+        <div class="stat-value">4</div>
+        <div class="stat-change negative">+1 this week</div>
+      </div>
+    </div>
+
+    <!-- Section Header -->
+    <div class="section-header">
+      <h3>Recent Tasks</h3>
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all">All</button>
+        <button class="filter-tab" data-filter="todo">To Do</button>
+        <button class="filter-tab" data-filter="in-progress">In Progress</button>
+        <button class="filter-tab" data-filter="done">Done</button>
+      </div>
+    </div>
+
+    <!-- Task Cards Grid -->
+    <div class="tasks-grid" id="tasksGrid">
+      <!-- Cards populated by JS -->
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Task Data ──
+const tasks = [
+  {
+    id: 'TF-301',
+    title: 'Redesign onboarding flow',
+    desc: 'Simplify the 5-step onboarding into a progressive disclosure pattern. Reduce drop-off at step 3.',
+    status: 'in-progress',
+    priority: 'critical',
+    assignee: { name: 'Jane Doe', initials: 'JD', color: '#C75B39' },
+    due: '2026-03-20',
+    tags: ['Design', 'UX']
+  },
+  {
+    id: 'TF-298',
+    title: 'Implement dark mode toggle',
+    desc: 'Add system-aware dark mode with manual override. Persist preference in localStorage.',
+    status: 'todo',
+    priority: 'medium',
+    assignee: { name: 'Alex Kim', initials: 'AK', color: '#6B8F71' },
+    due: '2026-03-24',
+    tags: ['Frontend', 'A11y']
+  },
+  {
+    id: 'TF-295',
+    title: 'API rate limiting middleware',
+    desc: 'Add sliding window rate limiter to public endpoints. Target: 100 req/min per API key.',
+    status: 'in-progress',
+    priority: 'high',
+    assignee: { name: 'Sam Torres', initials: 'ST', color: '#3A7CB8' },
+    due: '2026-03-21',
+    tags: ['Backend', 'Security']
+  },
+  {
+    id: 'TF-292',
+    title: 'Fix calendar sync bug',
+    desc: 'Events created via API not showing in calendar view. Likely a timezone offset issue in the serializer.',
+    status: 'todo',
+    priority: 'high',
+    assignee: { name: 'Jane Doe', initials: 'JD', color: '#C75B39' },
+    due: '2026-03-19',
+    tags: ['Bug', 'Calendar']
+  },
+  {
+    id: 'TF-289',
+    title: 'Quarterly metrics report',
+    desc: 'Compile Q1 metrics: active users, retention, NPS scores. Deadline for board presentation.',
+    status: 'done',
+    priority: 'medium',
+    assignee: { name: 'Morgan Li', initials: 'ML', color: '#D4943A' },
+    due: '2026-03-15',
+    tags: ['Analytics']
+  },
+  {
+    id: 'TF-285',
+    title: 'Migrate auth to OAuth 2.1',
+    desc: 'Replace legacy session tokens with OAuth 2.1 PKCE flow. Coordinate with mobile team for token refresh.',
+    status: 'in-progress',
+    priority: 'critical',
+    assignee: { name: 'Sam Torres', initials: 'ST', color: '#3A7CB8' },
+    due: '2026-03-22',
+    tags: ['Backend', 'Auth']
+  },
+  {
+    id: 'TF-282',
+    title: 'Accessibility audit — WCAG 2.2',
+    desc: 'Run full audit against WCAG 2.2 AA. Focus on keyboard nav, color contrast, and screen reader compat.',
+    status: 'todo',
+    priority: 'medium',
+    assignee: { name: 'Alex Kim', initials: 'AK', color: '#6B8F71' },
+    due: '2026-03-28',
+    tags: ['A11y', 'Audit']
+  },
+  {
+    id: 'TF-278',
+    title: 'Upgrade to Node 22 LTS',
+    desc: 'Bump runtime from Node 20 to 22 LTS. Update Docker images, CI config, and test matrix.',
+    status: 'done',
+    priority: 'low',
+    assignee: { name: 'Morgan Li', initials: 'ML', color: '#D4943A' },
+    due: '2026-03-10',
+    tags: ['DevOps', 'Infra']
+  },
+  {
+    id: 'TF-275',
+    title: 'Mobile push notification service',
+    desc: 'Integrate FCM for Android and APNs for iOS. Support rich notifications with action buttons.',
+    status: 'todo',
+    priority: 'high',
+    assignee: { name: 'Jane Doe', initials: 'JD', color: '#C75B39' },
+    due: '2026-03-26',
+    tags: ['Mobile', 'Backend']
+  }
+];
+
+const statusLabels = { 'todo': 'To Do', 'in-progress': 'In Progress', 'done': 'Done' };
+
+function isOverdue(dateStr, status) {
+  if (status === 'done') return false;
+  return new Date(dateStr) < new Date('2026-03-20');
+}
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function renderTasks(filter) {
+  const grid = document.getElementById('tasksGrid');
+  const filtered = filter === 'all' ? tasks : tasks.filter(t => t.status === filter);
+
+  grid.innerHTML = filtered.map((t, i) => `
+    <div class="task-card" style="animation-delay: ${i * 0.04}s">
+      <div class="card-top">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="priority-dot ${t.priority}"></span>
+          <span class="task-id">${t.id}</span>
+        </div>
+        <span class="status-badge ${t.status}">
+          <span class="status-dot"></span>
+          ${statusLabels[t.status]}
+        </span>
+      </div>
+      <h4>${t.title}</h4>
+      <p class="task-desc">${t.desc}</p>
+      <div class="task-tags">
+        ${t.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+      </div>
+      <div class="card-footer">
+        <div class="assignee">
+          <span class="assignee-avatar" style="background:${t.assignee.color}">${t.assignee.initials}</span>
+          <span class="assignee-name">${t.assignee.name}</span>
+        </div>
+        <span class="due-date ${isOverdue(t.due, t.status) ? 'overdue' : ''}">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/></svg>
+          ${formatDate(t.due)}
+        </span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── Filter Tabs ──
+document.querySelectorAll('.filter-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    renderTasks(tab.dataset.filter);
+  });
+});
+
+// ── User Dropdown ──
+const userMenu = document.getElementById('userMenu');
+const userDropdown = document.getElementById('userDropdown');
+
+userMenu.addEventListener('click', (e) => {
+  e.stopPropagation();
+  userDropdown.classList.toggle('open');
+});
+
+document.addEventListener('click', () => {
+  userDropdown.classList.remove('open');
+});
+
+// ── Mobile Sidebar ──
+const mobileToggle = document.getElementById('mobileToggle');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebarOverlay');
+
+mobileToggle.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('open');
+});
+
+overlay.addEventListener('click', () => {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('open');
+});
+
+// ── Keyboard Shortcut (/) ──
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
+    e.preventDefault();
+    document.querySelector('.header-search input').focus();
+  }
+  if (e.key === 'Escape') {
+    document.querySelector('.header-search input').blur();
+    userDropdown.classList.remove('open');
+    sidebar.classList.remove('open');
+    overlay.classList.remove('open');
+  }
+});
+
+// ── Greeting ──
+(function setGreeting() {
+  const h = new Date().getHours();
+  const g = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  const el = document.querySelector('.page-heading .greeting');
+  if (el) el.innerHTML = el.innerHTML.replace('Good morning', g);
+})();
+
+// ── Init ──
+renderTasks('all');
+</script>
+</body>
+</html>
